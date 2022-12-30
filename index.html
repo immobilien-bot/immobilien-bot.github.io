@@ -3,7 +3,7 @@
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title>Immo 1</title>
+        <title>PayPal Standard Payments Integration | Client Demo</title>
       </head>
 
       <body>
@@ -11,7 +11,10 @@
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <script src="https://www.paypal.com/sdk/js?client-id=AdqEfTRuiDRAhiJbXBDpKHDFChv815phbjq7tmN73Eb05ndombkW8sqsOEOXfX_65V4KGNjS4bt0gvJF&currency=EUR&intent=capture&enable-funding=venmo" data-sdk-integration-source="integrationbuilder"></script>
         <script>
-            Telegram.WebApp.ready();
+            const params = new Proxy(new URLSearchParams(window.location.search), {
+                get: (searchParams, prop) => searchParams.get(prop),
+            });
+            let sub = params.sub;       
           const paypalButtonsComponent = paypal.Buttons({
               style: {
                 color: "gold",
@@ -21,13 +24,14 @@
 
               // set up the transaction
               createOrder: (data, actions) => {
+                alert(JSON.stringify(data))
                   // pass in any options from the v2 orders create call:
                   // https://developer.paypal.com/api/orders/v2/#orders-create-request-body
                   const createOrderPayload = {
                       purchase_units: [
                           {
                               amount: {
-                                  value: "88.44"
+                                  value: sub
                               }
                           }
                       ]
@@ -39,9 +43,8 @@
               // finalize the transaction
               onApprove: (data, actions) => {
                   const captureOrderHandler = (details) => {
-                      const payerName = details.payer.name.given_name;
-                      const data = JSON.stringify({payername: payerName});
-                    //   console.log('Transaction completed');
+                      const data = JSON.stringify(details);
+                      alert(data)
                       Telegram.WebApp.sendData(data);
                       Telegram.WebApp.close();
                   };
@@ -52,18 +55,22 @@
               // handle unrecoverable errors
               onError: (err) => {
                 //   console.error('An error prevented the buyer from checking out with PayPal');
-                  Telegram.WebApp.close();
+                const data = JSON.stringify(details);
+                      alert(data)
+                      Telegram.WebApp.sendData(data);
+                      Telegram.WebApp.close();
               }
           });
 
           paypalButtonsComponent
               .render("#paypal-button-container")
               .catch((err) => {
-                  console.error('PayPal Buttons failed to render');
+                //   console.error('PayPal Buttons failed to render');
+                  const data = JSON.stringify(details);
+                      alert(data)
+                      Telegram.WebApp.sendData(data);
+                      Telegram.WebApp.close();                  
               });
         </script>
       </body>
-    <script type="text/javascript">
-        Telegram.WebApp.expand();
-    </script>        
     </html>
