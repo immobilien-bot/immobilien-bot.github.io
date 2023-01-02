@@ -24,7 +24,7 @@
 
               // set up the transaction
               createOrder: (data, actions) => {
-                alert(JSON.stringify(data))
+                // alert(JSON.stringify(data))
                   // pass in any options from the v2 orders create call:
                   // https://developer.paypal.com/api/orders/v2/#orders-create-request-body
                   const createOrderPayload = {
@@ -44,13 +44,22 @@
               onApprove: (data, actions) => {
                   const captureOrderHandler = (details) => {
                       const data = JSON.stringify(details);
-                      alert(data)
+                      // alert(data)
                       Telegram.WebApp.sendData(data);
                       Telegram.WebApp.close();
-                  };
+                    };
+                    
+                    return actions.order.capture().then(captureOrderHandler);
+                  },
+                  
+                  
+                  // onCancel: (data) => {
+                  //   Telegram.WebApp.sendData(data);
+                  //   Telegram.WebApp.close();
+                  // alert("CLOSING")
 
-                  return actions.order.capture().then(captureOrderHandler);
-              },
+              // },
+
 
               // handle unrecoverable errors
               onError: (err) => {
